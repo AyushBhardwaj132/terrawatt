@@ -1,0 +1,184 @@
+{
+  "test_period_start": "2025-01-01",
+  "horizons_evaluated": [
+    7
+  ],
+  "results_summary": [
+    {
+      "horizon": 7,
+      "method": "Base LightGBM",
+      "level": "national",
+      "MAE": 65.38,
+      "RMSE": 76.48,
+      "MAPE": 1.5,
+      "WMAPE": 1.51,
+      "coherence_error": 52.16648327,
+      "is_coherent": false
+    },
+    {
+      "horizon": 7,
+      "method": "Base LightGBM",
+      "level": "region",
+      "MAE": 11.98,
+      "RMSE": 17.25,
+      "MAPE": 1.59,
+      "WMAPE": 1.38,
+      "coherence_error": 52.16648327,
+      "is_coherent": false
+    },
+    {
+      "horizon": 7,
+      "method": "Base LightGBM",
+      "level": "state",
+      "MAE": 2.74,
+      "RMSE": 5.05,
+      "MAPE": 132.25,
+      "WMAPE": 2.85,
+      "coherence_error": 52.16648327,
+      "is_coherent": false
+    },
+    {
+      "horizon": 7,
+      "method": "Base LightGBM",
+      "level": "overall",
+      "MAE": 4.87,
+      "RMSE": 12.9,
+      "MAPE": 115.1,
+      "WMAPE": 1.91,
+      "coherence_error": 52.16648327,
+      "is_coherent": false
+    },
+    {
+      "horizon": 7,
+      "method": "Bottom-Up",
+      "level": "national",
+      "MAE": 49.09,
+      "RMSE": 55.82,
+      "MAPE": 1.14,
+      "WMAPE": 1.13,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "Bottom-Up",
+      "level": "region",
+      "MAE": 11.98,
+      "RMSE": 17.25,
+      "MAPE": 1.59,
+      "WMAPE": 1.38,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "Bottom-Up",
+      "level": "state",
+      "MAE": 2.74,
+      "RMSE": 5.05,
+      "MAPE": 132.25,
+      "WMAPE": 2.85,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "Bottom-Up",
+      "level": "overall",
+      "MAE": 4.55,
+      "RMSE": 10.62,
+      "MAPE": 115.09,
+      "WMAPE": 1.79,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "Top-Down",
+      "level": "national",
+      "MAE": 65.38,
+      "RMSE": 76.48,
+      "MAPE": 1.5,
+      "WMAPE": 1.51,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "Top-Down",
+      "level": "region",
+      "MAE": 15.25,
+      "RMSE": 21.06,
+      "MAPE": 1.87,
+      "WMAPE": 1.76,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "Top-Down",
+      "level": "state",
+      "MAE": 3.1,
+      "RMSE": 5.53,
+      "MAPE": 132.31,
+      "WMAPE": 3.23,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "Top-Down",
+      "level": "overall",
+      "MAE": 5.51,
+      "RMSE": 13.61,
+      "MAPE": 115.19,
+      "WMAPE": 2.17,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "MinT-Shrink",
+      "level": "national",
+      "MAE": 52.16,
+      "RMSE": 58.71,
+      "MAPE": 1.21,
+      "WMAPE": 1.21,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "MinT-Shrink",
+      "level": "region",
+      "MAE": 12.6,
+      "RMSE": 17.87,
+      "MAPE": 1.64,
+      "WMAPE": 1.46,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "MinT-Shrink",
+      "level": "state",
+      "MAE": 2.75,
+      "RMSE": 5.05,
+      "MAPE": 126.12,
+      "WMAPE": 2.86,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    },
+    {
+      "horizon": 7,
+      "method": "MinT-Shrink",
+      "level": "overall",
+      "MAE": 4.69,
+      "RMSE": 11.02,
+      "MAPE": 109.77,
+      "WMAPE": 1.84,
+      "coherence_error": 0.0,
+      "is_coherent": true
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+num_origins,horizon,method,level,MAE,RMSE,WMAPE,coherence_error,is_coherent
+2,7,Base LightGBM,national,45.16,51.48,1.02,104.14229944,False
+2,7,Base LightGBM,overall,4.28,10.05,1.63,104.14229944,False
+2,7,Base LightGBM,region,10.83,15.32,1.21,104.14229944,False
+2,7,Base LightGBM,state,2.65,4.95,2.67,104.14229944,False
+2,7,Bottom-Up,national,38.72,45.3,0.87,0.0,True
+2,7,Bottom-Up,overall,4.15,9.24,1.58,0.0,True
+2,7,Bottom-Up,region,10.83,15.32,1.21,0.0,True
+2,7,Bottom-Up,state,2.65,4.95,2.67,0.0,True
+2,7,MinT-Shrink,national,37.23,43.38,0.84,0.0,True
+2,7,MinT-Shrink,overall,4.12,9.09,1.57,0.0,True
+2,7,MinT-Shrink,region,10.84,15.21,1.22,0.0,True
+2,7,MinT-Shrink,state,2.64,4.94,2.66,0.0,True
+2,7,Top-Down,national,45.16,51.48,1.02,0.0,True
+2,7,Top-Down,overall,4.54,10.26,1.74,0.0,True
+2,7,Top-Down,region,11.88,16.33,1.34,0.0,True
+2,7,Top-Down,state,2.82,5.2,2.85,0.0,True

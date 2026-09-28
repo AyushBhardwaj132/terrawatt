@@ -1,20 +1,62 @@
 """
 main.py
-FastAPI entrypoint for TerraWatt.
-See README Section 5.7 for the endpoint spec.
+FastAPI entrypoint for TerraWatt platform.
+Serves energy demand forecast endpoints, telemetry ingestion API, and real-time WebSockets.
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+from typing import List
+
 from api.model_service import (
-    load_forecasts, get_available_nodes, get_forecast_for_node, get_full_hierarchy_snapshot,
-    ingest_actual, get_ingested_history
+    load_forecasts, get_available_nodes, get_forecast_for_node,
+    get_full_hierarchy_snapshot, ingest_actual, get_ingested_history
 )
 from api.schemas import IngestPayload
 
+
+class ConnectionManager:
+    """Manages active WebSocket connections for live telemetry streaming."""
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception:
+                pass
+
+
+ws_manager = ConnectionManager()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup logic
+    try:
+        load_forecasts()
+        print("[OK] Reconciled forecast data loaded into memory.")
+    except Exception as e:
+        print(f"[WARNING] Could not load forecasts on startup: {e}")
+    yield
+    # Shutdown logic
+
+
 app = FastAPI(
     title="TerraWatt",
-    description="Multi-Region Energy Demand Forecasting & Reconciliation Engine"
+    description="Multi-Region Energy Demand Forecasting & Hierarchical Reconciliation Infrastructure",
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -25,25 +67,20 @@ app.add_middleware(
 )
 
 
-@app.on_event("startup")
-def startup_event():
-    load_forecasts()
-
-
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "TerraWatt Forecasting Platform"}
 
 
 @app.get("/forecast/hierarchy/nodes")
 def list_nodes():
-    """List every valid node_id that can be queried via /forecast/{node_id}."""
+    """List every valid node_id available in the hierarchy."""
     return {"nodes": get_available_nodes()}
 
 
 @app.get("/forecast/hierarchy")
 def forecast_hierarchy(date: str = None):
-    """Return every node's reconciled forecast for a given date (latest if not specified)."""
+    """Return full hierarchy forecast snapshot for a given date."""
     try:
         return get_full_hierarchy_snapshot(date)
     except KeyError as e:
@@ -52,7 +89,7 @@ def forecast_hierarchy(date: str = None):
 
 @app.get("/forecast/{node_id:path}")
 def forecast_node(node_id: str):
-    """Return the full forecast time series for a single node (e.g. 'India', 'India/NR', 'India/NR/Punjab')."""
+    """Return full forecast time series for a single hierarchy node."""
     try:
         return {"node_id": node_id, "forecast": get_forecast_for_node(node_id)}
     except KeyError as e:
@@ -60,17 +97,27 @@ def forecast_node(node_id: str):
 
 
 @app.post("/ingest")
-def ingest(payload: IngestPayload):
+async def ingest(payload: IngestPayload):
     """
-    Simulate streaming telemetry: ingest a new actual value for a
-    node/date, and compare it against the existing reconciled forecast
-    if one exists. Does NOT trigger live model retraining -- see
-    model_service.ingest_actual() docstring for why.
+    Ingest simulated telemetry observation, compare against forecast, and broadcast live via WebSocket.
     """
-    return ingest_actual(payload.node_id, payload.date, payload.actual_value)
+    result = ingest_actual(payload.node_id, payload.date, payload.actual_value)
+    await ws_manager.broadcast(result)
+    return result
 
 
 @app.get("/ingest/history")
 def ingest_history():
-    """Return everything ingested so far this session."""
+    """Return all ingested telemetry records from current session."""
     return {"history": get_ingested_history()}
+
+
+@app.websocket("/ws/telemetry")
+async def websocket_telemetry(websocket: WebSocket):
+    """Real-time WebSocket connection for streaming telemetry updates."""
+    await ws_manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket)
