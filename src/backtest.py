@@ -35,7 +35,8 @@ HORIZONS = [7, 14, 30]
 
 def run_rolling_backtest(
     origins: List[str] = DEFAULT_ORIGINS,
-    horizons: List[int] = HORIZONS
+    horizons: List[int] = HORIZONS,
+    save_results: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, dict]:
     """
     Executes expanding-window rolling-origin evaluation across multiple historical origins.
@@ -203,10 +204,7 @@ def run_rolling_backtest(
         print(f"  [OK] Origin {origin} completed in {time.time() - origin_start:.2f}s")
 
     df_all_forecasts = pd.concat(all_forecast_records, ignore_index=True)
-    df_all_forecasts.to_csv(RESULTS_DIR / "rolling_forecasts.csv", index=False)
-
     df_summary = pd.DataFrame(summary_rows)
-    df_summary.to_csv(RESULTS_DIR / "rolling_backtest.csv", index=False)
 
     pooled_rows = []
     for (horizon, method_name, level), group in df_summary.groupby(["horizon", "method", "level"]):
@@ -228,27 +226,32 @@ def run_rolling_backtest(
         })
 
     df_pooled_summary = pd.DataFrame(pooled_rows)
-    df_pooled_summary.to_csv(RESULTS_DIR / "rolling_backtest_summary.csv", index=False)
 
     elapsed = float(time.time() - start_time)
     print("\n" + "=" * 65)
     print(f"      ROLLING-ORIGIN BACKTEST COMPLETE in {elapsed:.2f}s")
     print(f"      Evaluated {len(origins)} Origins x {len(horizons)} Horizons")
-    print(f"      Saved: results/rolling_backtest.csv & results/rolling_backtest_summary.csv")
+    if save_results:
+        print(f"      Saved: results/rolling_backtest.csv & results/rolling_backtest_summary.csv")
     print("=" * 65)
 
     res_dict = {
         "num_origins": len(origins),
         "first_origin": str(origins[0]),
         "last_origin": str(origins[-1]),
+        "origins": [str(o) for o in origins],
         "horizons": [int(h) for h in horizons],
         "elapsed_seconds": round(elapsed, 2),
         "max_coherence_error": float(max_coherence_error_reconciled),
         "pooled_results": pooled_rows
     }
 
-    with open(RESULTS_DIR / "rolling_backtest_summary.json", "w") as f:
-        json.dump(res_dict, f, indent=2)
+    if save_results:
+        df_all_forecasts.to_csv(RESULTS_DIR / "rolling_forecasts.csv", index=False)
+        df_summary.to_csv(RESULTS_DIR / "rolling_backtest.csv", index=False)
+        df_pooled_summary.to_csv(RESULTS_DIR / "rolling_backtest_summary.csv", index=False)
+        with open(RESULTS_DIR / "rolling_backtest_summary.json", "w") as f:
+            json.dump(res_dict, f, indent=2)
 
     return df_all_forecasts, df_pooled_summary, res_dict
 

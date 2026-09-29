@@ -55,3 +55,15 @@ def test_ingest_telemetry_endpoint():
     assert data["status"] == "ingested"
     assert data["comparison"]["actual"] == 4200.0
     assert "anomaly_status" in data["comparison"]
+
+
+def test_evaluation_summary_endpoint():
+    """Verify /evaluation/summary returns evaluation results."""
+    response = client.get("/evaluation/summary")
+    assert response.status_code == 200
+    data = response.json()
+    assert "pooled_results" in data or "results_summary" in data
+    assert data.get("num_origins") == 6
+    assert 7 in data.get("horizons", [])
+    assert 14 in data.get("horizons", [])
+    assert 30 in data.get("horizons", [])

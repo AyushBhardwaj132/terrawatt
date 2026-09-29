@@ -4,14 +4,15 @@ FastAPI entrypoint for TerraWatt platform.
 Serves energy demand forecast endpoints, telemetry ingestion API, and real-time WebSockets.
 """
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from typing import List
+from typing import List, Optional
 
 from api.model_service import (
     load_forecasts, get_available_nodes, get_forecast_for_node,
-    get_full_hierarchy_snapshot, ingest_actual, get_ingested_history
+    get_full_hierarchy_snapshot, ingest_actual, get_ingested_history,
+    get_evaluation_summary
 )
 from api.schemas import IngestPayload
 
@@ -45,7 +46,7 @@ async def lifespan(app: FastAPI):
     # Startup logic
     try:
         load_forecasts()
-        print("[OK] Reconciled forecast data loaded into memory.")
+        print("[OK] Reconciled forecast data and actuals loaded into memory.")
     except Exception as e:
         print(f"[WARNING] Could not load forecasts on startup: {e}")
     yield
@@ -88,12 +89,21 @@ def forecast_hierarchy(date: str = None):
 
 
 @app.get("/forecast/{node_id:path}")
-def forecast_node(node_id: str):
-    """Return full forecast time series for a single hierarchy node."""
+def forecast_node(node_id: str, horizon: Optional[int] = Query(None, description="Forecast horizon in days")):
+    """Return forecast time series for a single hierarchy node, optionally sliced by horizon."""
     try:
-        return {"node_id": node_id, "forecast": get_forecast_for_node(node_id)}
+        return {"node_id": node_id, "forecast": get_forecast_for_node(node_id, horizon=horizon)}
     except KeyError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.get("/evaluation/summary")
+def evaluation_summary():
+    """Return rolling backtest and objective evaluation summary."""
+    summary = get_evaluation_summary()
+    if not summary:
+        raise HTTPException(status_code=404, detail="No evaluation results found. Run backtest first.")
+    return summary
 
 
 @app.post("/ingest")

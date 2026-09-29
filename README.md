@@ -1,5 +1,5 @@
 # TerraWatt
-### Multi-Region Real-Time Energy Demand Infrastructure
+### Multi-Region Energy Demand Forecasting & Reconciliation Platform
 
 TerraWatt is a production-style, mathematically coherent hierarchical electricity demand forecasting platform built for the Indian power grid (POSOCO / GRID-INDIA dataset).
 
@@ -124,22 +124,24 @@ docker-compose up --build
 
 ---
 
-## 📊 Empirical Evaluation Results (Origin: 2025-01-01)
+## 📊 Empirical Evaluation Results (6-Origin Expanding Backtest)
+
+Pooled metrics across **6 historical forecast origins** (`2025-01-01` to `2025-06-01`):
 
 | Horizon | Method | National MAE (MU) | National RMSE (MU) | WMAPE (%) | Coherence Error (MU) | Coherent? |
 | :--- | :--- | :--- | :--- | :--- | :--- | :---: |
-| **7 Days** | Base LightGBM | 65.38 | 76.48 | 1.51% | 52.166483 | ❌ |
-| **7 Days** | **Bottom-Up** | **49.09** | **55.82** | **1.13%** | **0.000000** | **✅** |
-| **7 Days** | Top-Down | 65.38 | 76.48 | 1.51% | 0.000000 | ✅ |
-| **7 Days** | MinT-Shrink | 52.16 | 58.71 | 1.21% | 0.000000 | ✅ |
-| **14 Days** | Base LightGBM | 68.78 | 83.84 | 1.58% | 60.203903 | ❌ |
-| **14 Days** | **Bottom-Up** | **57.37** | **74.70** | **1.31%** | **0.000000** | **✅** |
-| **14 Days** | Top-Down | 68.78 | 83.84 | 1.58% | 0.000000 | ✅ |
-| **14 Days** | MinT-Shrink | 58.45 | 75.09 | 1.34% | 0.000000 | ✅ |
-| **30 Days** | Base LightGBM | 56.63 | 68.88 | 1.28% | 60.203903 | ❌ |
-| **30 Days** | **Bottom-Up** | **45.30** | **59.15** | **1.02%** | **0.000000** | **✅** |
-| **30 Days** | Top-Down | 56.63 | 68.88 | 1.28% | 0.000000 | ✅ |
-| **30 Days** | MinT-Shrink | 45.98 | 59.59 | 1.04% | 0.000000 | ✅ |
+| **7 Days** | Base LightGBM | 77.86 | 90.91 | 1.66% | 104.22 | ❌ |
+| **7 Days** | Bottom-Up | 77.82 | 87.98 | 1.66% | 0.00 | ✅ |
+| **7 Days** | Top-Down | 77.86 | 90.91 | 1.66% | 0.00 | ✅ |
+| **7 Days** | **MinT-Shrink** | **76.72** | **86.12** | **1.63%** | **0.00** | **✅** |
+| **14 Days** | Base LightGBM | 91.78 | 113.31 | 1.90% | 173.61 | ❌ |
+| **14 Days** | Bottom-Up | 80.67 | 100.63 | 1.68% | 0.00 | ✅ |
+| **14 Days** | Top-Down | 91.78 | 113.31 | 1.90% | 0.00 | ✅ |
+| **14 Days** | **MinT-Shrink** | **80.36** | **100.29** | **1.67%** | **0.00** | **✅** |
+| **30 Days** | Base LightGBM | 79.46 | 102.74 | 1.65% | 173.61 | ❌ |
+| **30 Days** | Bottom-Up | 76.60 | 96.81 | 1.59% | 0.00 | ✅ |
+| **30 Days** | Top-Down | 79.46 | 102.74 | 1.65% | 0.00 | ✅ |
+| **30 Days** | **MinT-Shrink** | **74.53** | **94.97** | **1.55%** | **0.00** | **✅** |
 
 ---
 
